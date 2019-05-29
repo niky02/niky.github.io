@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>基础知识 | 个人开发总结</title>
+    <meta name="description" content="借助于vuepress搭建的">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.c2623072.css" as="style"><link rel="preload" href="/assets/js/app.9bc3c338.js" as="script"><link rel="preload" href="/assets/js/2.47b84fd9.js" as="script"><link rel="preload" href="/assets/js/6.d0613492.js" as="script"><link rel="prefetch" href="/assets/js/3.83213b2f.js"><link rel="prefetch" href="/assets/js/4.26cb7e0f.js"><link rel="prefetch" href="/assets/js/5.d47fc26c.js"><link rel="prefetch" href="/assets/js/7.8c7ff2a3.js"><link rel="prefetch" href="/assets/js/8.f53e5623.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c2623072.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">个人开发总结</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>vue相关</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/vue/" class="active sidebar-link">Introduction</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/vue/#nexttick-watch-computed间的区别" class="sidebar-link">$nextTick $watch computed间的区别</a></li><li class="sidebar-sub-header"><a href="/vue/#v-if-v-show" class="sidebar-link">v-if v-show</a></li><li class="sidebar-sub-header"><a href="/vue/#生命周期" class="sidebar-link">生命周期</a></li></ul></li><li><a href="/vue/basekonwlage.html" class="sidebar-link">/vue/basekonwlage.html</a></li></ul></section></li></ul> </aside> <main class="page"> <div class="content default"><h1 id="基础知识"><a href="#基础知识" aria-hidden="true" class="header-anchor">#</a> 基础知识</h1> <h2 id="nexttick-watch-computed间的区别"><a href="#nexttick-watch-computed间的区别" aria-hidden="true" class="header-anchor">#</a> $nextTick $watch computed间的区别</h2> <ul><li><strong>$nextTick，是异步监听，从而可刷新监听DOM变化</strong></li> <li>**computed只有在它的相关依赖发生改变时才会重新求值,</li></ul> <div class="language-angular2//computed的另一种写法 extra-class"><pre class="language-text"><code>computed:{
+                 checkAll:{
+                     get(){
+                        return this.checks.every(check=&gt;check.value)
+                     },
+                     set(value){ // 双向绑定数据
+                        this.checks.forEach(check =&gt;check.value = value);
+                     }
+                 }
+             }
+</code></pre></div><p>在data里没有定义也能使用，computed是有缓存的在所依赖的数据没有发生变化是不会执行
+总之：数据量大，需要缓存的时候用computed；每次确实需要重新加载，不需要缓存时用methods**</p> <ul><li><strong>$watch没有缓存，能支持异步监听变化</strong></li></ul> <div class="language- extra-class"><pre class="language-text"><code>    watch: { //伪代码 这是深层监听
+                getFoddsData: {
+                    handler: function (val, oldVal) {
+                        if(val==='order'){
+                           this.groupshow=false
+                           this.$nextTick(()=&gt;{//是通过变化后异步监听操作
+                              this.ordershow=true
+                           })
+                        }
+                    },
+                    deep: true
+                }
+            },
+</code></pre></div><div class="language- extra-class"><pre class="language-text"><code>watch:{
+            'searchForm.formData.dateType'(val){//这里没有用深层监听
+                if(val==='order'){
+                        this.groupshow=false
+                        this.$nextTick(()=&gt;{
+                            this.ordershow=true
+                        })
+                }else{
+                    this.ordershow=false
+                    this.$nextTick(()=&gt;{
+                        this.groupshow=true
+                    })
+                }
+            },
+</code></pre></div><div class="language-angular2 extra-class"><pre class="language-text"><code>computed:{//这里可直接监听数据是否有变化，而在data中不需要定义conCode
+            conCode(){
+                return this.$route.query.conCode
+            }
+        },
+</code></pre></div><h2 id="v-if-v-show"><a href="#v-if-v-show" aria-hidden="true" class="header-anchor">#</a> v-if v-show</h2> <ul><li><strong>v-if如果不成里 dom就会消失</strong></li> <li><strong>v-show如果不成里 dom不会消失，操作的是样式，v-show不支持template</strong></li></ul> <div class="language-angular2//是不起作用 extra-class"><pre class="language-text"><code>&lt;template v-show=&quot;flag&quot;&gt;
+            &lt;div&gt;hello&lt;/div&gt;
+            &lt;div &gt;123&lt;/div&gt;
+        &lt;/template&gt;
+</code></pre></div><ul><li><strong>v-html</strong></li></ul> <div class="language-angular2//慎用 extra-class"><pre class="language-text"><code>&lt;div v-html=&quot;message&quot;&gt;{{message}}&lt;/div&gt;
+export default {
+  data () {
+    return {
+      message: &quot;这里可以包含html标签&quot;
+    }
+  }
+}
+</code></pre></div><h2 id="生命周期"><a href="#生命周期" aria-hidden="true" class="header-anchor">#</a> 生命周期</h2> <div class="language-angular2//生命周期介绍 extra-class"><pre class="language-text"><code>            beforeCreate(){ // 钩子函数  beforeXXX   xxxxed
+                console.log(this,this.$data); // 初始化自己的生命周期 并且 绑定自己的事件
+            },
+            created(){ // 如果想调用ajax 
+                console.log(this.$data); // 可以获取数据和调用方法
+            },
+            beforeMount(){ // 第一次调用渲染函数之前
+                console.log('渲染前')
+            },
+            template:'',
+            mounted(){ // 获取真实dom  因为页面已经渲染完了
+                console.log('渲染后',this.$el.innerHTML);
+                this.a = 100;
+                this.timer = setInterval(()=&gt;{
+
+                })
+            },
+            beforeUpdate(){
+                this.b = 200;
+                console.log('更新前')
+            },
+            updated(){ // 一般不要操作数据 可能会导致死循环
+                console.log('更新后');
+            },
+            beforeDestroy(){
+                // 当前实例还可以用
+                clearInterval(this.timer);
+                console.log('销毁前')
+            },
+            destroyed(){
+                // 实例上的方法 监听都被移除掉
+                console.log('销毁后')
+            }
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><!----> <span class="next"><a href="/vue/basekonwlage.html">
+          /vue/basekonwlage.html
+        </a>
+        →
+      </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.9bc3c338.js" defer></script><script src="/assets/js/2.47b84fd9.js" defer></script><script src="/assets/js/6.d0613492.js" defer></script>
+  </body>
+</html>
